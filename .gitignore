@@ -1,0 +1,23 @@
+# Logs
+*.log
+npm-debug.log*
+
+# Dependency directories
+node_modules
+
+# dotenv environment variables file
+.env
+
+# Mac files
+.DS_Store
+
+#.husky message
+.husky/prepare-commit-msg
+
+# Build directory and file
+!.gitkeep
+dist
+
+src/dict.ts
+scripts/rawdict_utf16_65105_freq.txt
+scripts/google_pinyin_rawdict_utf8_65105_freq.txt
