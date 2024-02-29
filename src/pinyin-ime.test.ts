@@ -3,6 +3,12 @@ import { PinyinIME } from './pinyin-ime'
 import { dict } from './dict'
 
 describe('PinyinIME', () => {
+  it('should reset label after pick all candidate', () => {
+    const ime = new PinyinIME(dict)
+    ime.input('i')
+    ime.pickCandidate(0)
+    expect(ime.label).toEqual('')
+  })
   it('multiple participles hit one syllable', () => {
     const ime = new PinyinIME(dict)
     ime.input('xian')

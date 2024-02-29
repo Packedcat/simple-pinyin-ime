@@ -12,6 +12,11 @@ interface Candidate {
   token: string
   word: string
 }
+interface Result {
+  cadence: boolean
+  word: string
+  token: string
+}
 
 export class PinyinIME {
   private tokenizer: PinyinTokenizer
@@ -77,10 +82,26 @@ export class PinyinIME {
       this.pinyin = this.pinyin.substring(0, this.pinyin.length - 1)
     }
   }
-  pickCandidate(index: number) {
+  pickCandidate(index: number): Result {
     const item = this.candidates.splice(index, 1)[0]
-    if (!item) return
+    if (!item) {
+      throw new Error(`Miss candidate with index: ${index}`)
+    }
+    let cadence = false
     this.backStack.push(item)
     this.pinyin = this.pinyin.replace(item.token, '')
+    const ret = this.backStack.reduce(
+      (acc, item) => {
+        acc.word += item.word
+        acc.token += item.token
+        return acc
+      },
+      { token: '', word: '' },
+    )
+    if (this.pinyin === '') {
+      cadence = true
+      this.backStack.length = 0
+    }
+    return { cadence, ...ret }
   }
 }
