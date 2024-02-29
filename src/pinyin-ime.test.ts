@@ -3,6 +3,17 @@ import { PinyinIME } from './pinyin-ime'
 import { dict } from './dict'
 
 describe('PinyinIME', () => {
+  it('multiple participles hit one syllable', () => {
+    const ime = new PinyinIME(dict)
+    ime.input('xian')
+    expect(ime.candidates.slice(0, 5)).toEqual([
+      { token: 'xian', word: '先' }, // xian
+      { token: 'xian', word: '线' },
+      { token: 'xian', word: '县' },
+      { token: 'xian', word: '现' },
+      { token: 'xian', word: '西安' }, // xi an
+    ])
+  })
   it('should candidates computed correct after picked', () => {
     const ime = new PinyinIME(dict)
     ime.input('nou')

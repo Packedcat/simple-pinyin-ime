@@ -42,26 +42,30 @@ export class PinyinIME {
     // fewer token is better
     tokens.sort((a, b) => a.length - b.length)
     // use all highest frequency word of token list to splice candidate
-    const firstCandidate = tokens[0].map((i) => this.dict[i][0].w).join('')
+    const firstCandidate = {
+      token: this.pinyin,
+      word: tokens[0].map((i) => this.dict[i][0].w).join(''),
+    }
     // collect first syllable of all tokens
     const firstSyllableSet = [...new Set(tokens.map((i) => i[0]))]
     // longer syllable is better
     firstSyllableSet.sort((a, b) => b.length - a.length)
+    // project syllable to candidate
     const restCandidates = flatten(
-      firstSyllableSet
-        .filter((e) => e !== this.pinyin) // deduplicate
-        .map((s) => this.dict[s].map(({ w }) => ({ token: s, word: w }))),
-    ).reduce((acc, candidate) => {
+      firstSyllableSet.map((s) => this.dict[s].map(({ w }) => ({ token: s, word: w }))),
+    )
+    this.syllableList = tokens[0]
+    // deduplicate candidates
+    this.candidates = [firstCandidate, ...restCandidates].reduce((acc, candidate) => {
       const existingIndex = acc.findIndex((c) => c.word === candidate.word)
       if (existingIndex === -1) {
         acc.push(candidate)
       } else if (candidate.token.length > acc[existingIndex].token.length) {
+        // reserve the longest token
         acc[existingIndex] = candidate
       }
       return acc
     }, [] as Candidate[])
-    this.syllableList = tokens[0]
-    this.candidates = [{ token: this.pinyin, word: firstCandidate }, ...restCandidates]
   }
   input(char: string) {
     this.pinyin += char
