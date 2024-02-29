@@ -51,7 +51,15 @@ export class PinyinIME {
       firstSyllableSet
         .filter((e) => e !== this.pinyin) // deduplicate
         .map((s) => this.dict[s].map(({ w }) => ({ token: s, word: w }))),
-    )
+    ).reduce((acc, candidate) => {
+      const existingIndex = acc.findIndex((c) => c.word === candidate.word)
+      if (existingIndex === -1) {
+        acc.push(candidate)
+      } else if (candidate.token.length > acc[existingIndex].token.length) {
+        acc[existingIndex] = candidate
+      }
+      return acc
+    }, [] as Candidate[])
     this.syllableList = tokens[0]
     this.candidates = [{ token: this.pinyin, word: firstCandidate }, ...restCandidates]
   }
